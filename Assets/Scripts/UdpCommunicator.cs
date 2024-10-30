@@ -13,10 +13,14 @@ public class UdpCommunicator : MonoBehaviour
     private IPEndPoint localEndPoint;
     private Thread receiveThread;
 
-    public Action<string> OnMessageReceived; // 事件用于通知消息接收
+    public Action<string> OnMessageReceived;
+    public Action<byte[]> OnImageReceived;
+
     public int LocalPort { get; private set; }
     private ConcurrentQueue<string> messageQueue = new ConcurrentQueue<string>();
-    private bool isRunning = false;  // 控制线程的运行状态
+    private ConcurrentQueue<byte[]> imageQueue = new ConcurrentQueue<byte[]>();
+    private bool isRunning = false;
+
 
     public void SetLocalPort(int port)
     {
@@ -86,30 +90,39 @@ public class UdpCommunicator : MonoBehaviour
     {
         try
         {
-            // 设置接收超时时间（例如1000毫秒）
             udpClient.Client.ReceiveTimeout = 1000;
 
             while (isRunning)
             {
                 try
                 {
-                    byte[] data = udpClient.Receive(ref localEndPoint); // 接收数据
-                    string message = Encoding.UTF8.GetString(data);
-                    messageQueue.Enqueue(message); // 将消息加入队列
-                }
-                catch (SocketException ex)
-                {
-                    // 这里捕获的是接收超时的异常
-                    if (ex.SocketErrorCode == SocketError.TimedOut)
+                    byte[] data = udpClient.Receive(ref localEndPoint);
+
+                    // 解析文件头
+                    string header = Encoding.ASCII.GetString(data, 0, 4);
+                    byte[] contentData = new byte[data.Length - 4];
+                    Array.Copy(data, 4, contentData, 0, contentData.Length);
+
+                    if (header == "IMG|")
                     {
-                        // 接收超时，继续循环检查 isRunning
-                        continue;
+                        imageQueue.Enqueue(contentData);
+                    }
+                    else if (header == "TXT|")
+                    {
+                        string message = Encoding.UTF8.GetString(contentData);
+                        messageQueue.Enqueue(message);
                     }
                     else
                     {
-                        // 处理其他 Socket 异常
-                        Debug.LogError("SocketException: " + ex.Message);
+                        Debug.LogWarning("Unknown data type received.");
                     }
+                }
+                catch (SocketException ex)
+                {
+                    if (ex.SocketErrorCode == SocketError.TimedOut)
+                        continue;
+                    else
+                        Debug.LogError("SocketException: " + ex.Message);
                 }
             }
         }
@@ -126,6 +139,11 @@ public class UdpCommunicator : MonoBehaviour
         while (messageQueue.TryDequeue(out string message))
         {
             OnMessageReceived?.Invoke(message); // 使用事件回调
+        }
+
+        while (imageQueue.TryDequeue(out byte[] imageData))
+        {
+            OnImageReceived?.Invoke(imageData);
         }
     }
 

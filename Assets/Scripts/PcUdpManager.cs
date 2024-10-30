@@ -44,6 +44,9 @@ public class PcUdpManager : MonoBehaviour
     public LineRenderer lineRendererUp;
     public LineRenderer lineRendererRight;
 
+    private ImageReceiver imageReceiver;
+
+    public GameObject photoPlane;
 
     void Start()
     {
@@ -51,6 +54,11 @@ public class PcUdpManager : MonoBehaviour
         udpCommunicator = GetComponent<UdpCommunicator>();
         udpCommunicator.SetLocalPort(localPort);
         udpCommunicator.OnMessageReceived = OnMessageReceived;  // 设置回调函数
+
+        imageReceiver = new ImageReceiver();
+        imageReceiver.OnImageReceived += OnImageReceivedComplete;
+
+        udpCommunicator.OnImageReceived = (data) => imageReceiver.ReceivePacket(data);
 
         lineRendererForward.startWidth = 0.01f;
         lineRendererForward.endWidth = 0.01f;
@@ -256,6 +264,13 @@ public class PcUdpManager : MonoBehaviour
 
         // 计算位置偏移 = 手机位置 - 屏幕中间位置
         positionOffset =  screenCenter - phoneParent.transform.position;
+    }
+
+
+    private void OnImageReceivedComplete(Texture2D image){
+
+        photoPlane.GetComponent<Renderer>().material.mainTexture = image;
+
     }
 
     void OnApplicationQuit()
