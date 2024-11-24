@@ -1,17 +1,11 @@
 using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.Events;
+using System;
 
 public class UIEventHandler : MonoBehaviour, IDataHandler
 {
     public IReadOnlyCollection<string> SupportedDataTypes => new List<string> { "UIEvent" };
-
-    [System.Serializable]
-    public class UIEventData
-    {
-        public string elementId;
-        public string value;
-    }
 
     [System.Serializable]
     public class UIEventMapping
@@ -23,6 +17,9 @@ public class UIEventHandler : MonoBehaviour, IDataHandler
     [SerializeField]
     private List<UIEventMapping> eventMappings = new List<UIEventMapping>();
     private Dictionary<string, UnityEvent<string>> eventCache;
+
+    public delegate void SuperButtonEventHandler(string jsonData);
+    private Dictionary<string, SuperButtonEventHandler> superButtonHandlers = new Dictionary<string, SuperButtonEventHandler>();
 
     private void Awake()
     {
@@ -45,18 +42,35 @@ public class UIEventHandler : MonoBehaviour, IDataHandler
     {
         if (dataType != "UIEvent") return;
 
-        string jsonData = System.Text.Encoding.UTF8.GetString(data);
-        var eventData = UIEventProvider.UIEventData.FromJson(jsonData);
-        Debug.Log($"Received UI Event - ID: {eventData.elementId}, Value: {eventData.value}");
+        try 
+        {
+            string jsonData = System.Text.Encoding.UTF8.GetString(data);
+            var eventData = UIEventProvider.UIEventData.FromJson(jsonData);
+            Debug.Log($"Received UI Event - Type: {eventData.EventType}, ID: {eventData.ElementId}, Value: {eventData.Value}");
 
-        if (eventCache.TryGetValue(eventData.elementId, out var eventCallback))
-        {
-            eventCallback.Invoke(eventData.value);
+            if (superButtonHandlers.TryGetValue(eventData.ElementId, out var superButtonHandler))
+            {
+                Debug.Log($"调用超级按钮事件处理器: {jsonData}");
+                superButtonHandler(jsonData);
+            }
+            else if (eventCache.TryGetValue(eventData.ElementId, out var eventCallback))
+            {
+                eventCallback.Invoke(eventData.Value);
+            }
+            else
+            {
+                Debug.LogWarning($"No handler found for UI element ID: {eventData.ElementId}");
+            }
         }
-        else
+        catch (Exception e)
         {
-            Debug.LogWarning($"No handler found for UI element ID: {eventData.elementId}");
+            Debug.LogError($"Error handling UI event: {e.Message}");
         }
+    }
+
+    public void AddSuperButtonHandler(string elementId, SuperButtonEventHandler handler)
+    {
+        superButtonHandlers[elementId] = handler;
     }
 
     public void AddEventHandler(string elementId, UnityAction<string> handler)
@@ -65,14 +79,14 @@ public class UIEventHandler : MonoBehaviour, IDataHandler
         {
             var newEvent = new UnityEvent<string>();
             eventCache[elementId] = newEvent;
-            
-            eventMappings.Add(new UIEventMapping 
-            { 
+
+            eventMappings.Add(new UIEventMapping
+            {
                 elementId = elementId,
                 onEventReceived = newEvent
             });
         }
-        
+
         eventCache[elementId].AddListener(handler);
     }
 }
