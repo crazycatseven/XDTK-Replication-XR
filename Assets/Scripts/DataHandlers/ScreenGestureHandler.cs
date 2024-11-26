@@ -5,6 +5,7 @@ using System;
 
 public class ScreenGestureHandler : MonoBehaviour, IDataHandler
 {
+    
     public IReadOnlyCollection<string> SupportedDataTypes =>
         new List<string> { "ScreenGesture" };
 
@@ -13,27 +14,35 @@ public class ScreenGestureHandler : MonoBehaviour, IDataHandler
 
     public PinchEvent onPinchStart;
     public PinchEvent onPinchUpdate;
-    public UnityEvent onPinchEnd;
+    public PinchEvent onPinchEnd;
+
+
+    private static class PinchTypes
+    {
+        public const string Start = "PinchStart";
+        public const string Update = "PinchUpdate";
+        public const string End = "PinchEnd";
+    }
 
     public void HandleData(string dataType, byte[] data)
     {
         if (dataType != "ScreenGesture") return;
 
         string jsonData = System.Text.Encoding.UTF8.GetString(data);
-        var gestureData = JsonUtility.FromJson<ScreenGestureProvider.PinchData>(jsonData);
+        var gestureData = JsonUtility.FromJson<PinchEventData>(jsonData);
 
-        switch (gestureData.eventType)
+        switch (gestureData.type)
         {
-            case ScreenGestureProvider.EventTypes.PinchStart:
-                onPinchStart?.Invoke(gestureData.touch1Pos, gestureData.touch2Pos, gestureData.value);
+            case PinchTypes.Start:
+                onPinchStart?.Invoke(gestureData.touch1, gestureData.touch2, gestureData.value);
                 break;
 
-            case ScreenGestureProvider.EventTypes.PinchUpdate:
-                onPinchUpdate?.Invoke(gestureData.touch1Pos, gestureData.touch2Pos, gestureData.value);
+            case PinchTypes.Update:
+                onPinchUpdate?.Invoke(gestureData.touch1, gestureData.touch2, gestureData.value);
                 break;
 
-            case ScreenGestureProvider.EventTypes.PinchEnd:
-                onPinchEnd?.Invoke();
+            case PinchTypes.End:
+                onPinchEnd?.Invoke(gestureData.touch1, gestureData.touch2, gestureData.value);
                 break;
         }
     }

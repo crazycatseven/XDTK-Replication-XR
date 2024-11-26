@@ -4,41 +4,54 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using System.Collections.Generic;
 
+[Serializable]
+public class PinchEventData
+{
+    public string type;         // pinch event type
+    public Vector2 touch1;      // first touch point
+    public Vector2 touch2;      // second touch point
+    public string value;        // business data (e.g. selected item ID)
+}
+
 public class ScreenGestureProvider : MonoBehaviour, IDataProvider
 {
+
+    #region Public Properties
     public string DataType => "ScreenGesture";
     public bool IsEnabled { get; set; } = false;
     public event Action<string, byte[]> OnDataSend;
+    #endregion
 
-    public static class EventTypes
+    #region Gesture Data Structure
+
+    private static class PinchTypes
     {
-        public const string PinchStart = "PinchStart";
-        public const string PinchUpdate = "PinchUpdate";
-        public const string PinchEnd = "PinchEnd";
+        public const string Start = "PinchStart";
+        public const string Update = "PinchUpdate";
+        public const string End = "PinchEnd";
     }
+    #endregion
 
+    #region Pinch Gesture Properties
     [SerializeField]
     private float minPinchDistance = 10f; // 最小捏合距离
     private bool isPinching = false;
     private Vector2 pinchStartPos1, pinchStartPos2;
     private float pinchStartDistance;
+    #endregion
 
-    // 用于暂时禁用其他UI交互
+    #region UI Interaction Properties
     private EventSystem eventSystem;
     private GraphicRaycaster[] raycasters;
+    #endregion
 
-    [Serializable]
-    public class PinchData
-    {
-        public string eventType;    // 事件类型
-        public Vector2 touch1Pos;   // 第一个手指位置
-        public Vector2 touch2Pos;   // 第二个手指位置
-        public string value;        // 添加value字段
-    }
+    #region Public Events
+    public Action<Vector2, Vector2, string> OnPinchStart; // touch1, touch2, value
+    public Action<Vector2, Vector2, string> OnPinchUpdate; // touch1, touch2, value
+    public Action<Vector2, Vector2, string> OnPinchEnd; // touch1, touch2, value
+    #endregion
 
-    // 添加一个委托用于获取value
-    public delegate string GetGestureValueDelegate();
-    public GetGestureValueDelegate GetGestureValue { get; set; }
+
 
     private void Start()
     {
@@ -58,31 +71,23 @@ public class ScreenGestureProvider : MonoBehaviour, IDataProvider
             if (!isPinching &&
                 (touch1.phase == TouchPhase.Began || touch2.phase == TouchPhase.Began))
             {
-                // 开始捏合
-                StartPinch(touch1, touch2);
+                HandlePinchStart(touch1, touch2);
             }
             else if (isPinching &&
                      (touch1.phase == TouchPhase.Moved || touch2.phase == TouchPhase.Moved))
             {
-                // 捏合更新
-                UpdatePinch(touch1, touch2);
+                HandlePinchUpdate(touch1, touch2);
             }
             else if (isPinching &&
                      (touch1.phase == TouchPhase.Ended || touch2.phase == TouchPhase.Ended ||
                       touch1.phase == TouchPhase.Canceled || touch2.phase == TouchPhase.Canceled))
             {
-                // 结束捏合
-                EndPinch();
+                HandlePinchEnd(touch1, touch2);
             }
-        }
-        else if (isPinching)
-        {
-            // 如果捏合过程中失去了触摸点
-            EndPinch();
         }
     }
 
-    private void StartPinch(Touch touch1, Touch touch2)
+    public void HandlePinchStart(Touch touch1, Touch touch2, string value = "")
     {
         isPinching = true;
         pinchStartPos1 = touch1.position;
@@ -90,58 +95,58 @@ public class ScreenGestureProvider : MonoBehaviour, IDataProvider
         pinchStartDistance = Vector2.Distance(pinchStartPos1, pinchStartPos2);
 
         DisableUIInteraction();
-        SendPinchEvent(EventTypes.PinchStart, touch1, touch2);
+        SendPinchEvent(PinchTypes.Start, touch1, touch2, value);
     }
 
-    private void UpdatePinch(Touch touch1, Touch touch2)
+    public void HandlePinchUpdate(Touch touch1, Touch touch2, string value = "")
     {
         float currentDistance = Vector2.Distance(touch1.position, touch2.position);
         float deltaDistance = currentDistance - pinchStartDistance;
 
         if (Mathf.Abs(deltaDistance) > minPinchDistance)
         {
-            SendPinchEvent(EventTypes.PinchUpdate, touch1, touch2);
+            SendPinchEvent(PinchTypes.Update, touch1, touch2, value);
         }
     }
 
-    private void EndPinch()
+    public void HandlePinchEnd(Touch touch1, Touch touch2, string value = "")
     {
         if (!isPinching) return;
-
         isPinching = false;
+
         EnableUIInteraction();
-
-        var pinchData = new PinchData
-        {
-            eventType = EventTypes.PinchEnd,
-            touch1Pos = Vector2.zero,
-            touch2Pos = Vector2.zero,
-            value = GetGestureValue?.Invoke() ?? string.Empty
-        };
-        
-        SendEvent(EventTypes.PinchEnd, pinchData);
-        OnScreenGestureTriggered(EventTypes.PinchEnd, pinchData);
+        SendPinchEvent(PinchTypes.End, touch1, touch2, value);
     }
 
-    private void SendPinchEvent(string eventType, Touch touch1, Touch touch2)
+
+    public void SendPinchEvent(string eventType, Touch touch1, Touch touch2, string value = "")
     {
-        var pinchData = new PinchData
+        var pinchData = new PinchEventData
         {
-            eventType = eventType,
-            touch1Pos = touch1.position,
-            touch2Pos = touch2.position,
-            value = GetGestureValue?.Invoke() ?? string.Empty
+            type = eventType,
+            touch1 = touch1.position,
+            touch2 = touch2.position,
+            value = value
         };
 
-        SendEvent(eventType, pinchData);
-        OnScreenGestureTriggered(eventType, pinchData);
-    }
-
-    private void SendEvent(string eventType, PinchData data)
-    {
-        string jsonData = JsonUtility.ToJson(data);
+        string jsonData = JsonUtility.ToJson(pinchData);
         byte[] bytes = System.Text.Encoding.UTF8.GetBytes(jsonData);
         OnDataSend?.Invoke(DataType, bytes);
+
+        Debug.Log("SendPinchEvent: " + eventType + " Value: " + value);
+
+        switch (eventType)
+        {
+            case PinchTypes.Start:
+                OnPinchStart?.Invoke(touch1.position, touch2.position, value);
+                break;
+            case PinchTypes.Update:
+                OnPinchUpdate?.Invoke(touch1.position, touch2.position, value);
+                break;
+            case PinchTypes.End:
+                OnPinchEnd?.Invoke(touch1.position, touch2.position, value);
+                break;
+        }
     }
 
     private void DisableUIInteraction()
@@ -172,8 +177,4 @@ public class ScreenGestureProvider : MonoBehaviour, IDataProvider
         }
     }
 
-    private void OnScreenGestureTriggered(string eventType, PinchData data)
-    {
-        Debug.Log($"ScreenGestureProvider: {eventType} triggered");
-    }
 }

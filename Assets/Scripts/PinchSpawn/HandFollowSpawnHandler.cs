@@ -22,7 +22,8 @@ public class HandFollowSpawnHandler : MonoBehaviour
         pinchHandler = GetComponent<PinchSpawnHandler>();
         pinchHandler.OnPinchReadyForSpawn += HandlePinchReadyForSpawn;
         pinchHandler.OnPinchUpdate += HandlePinchUpdate;
-        pinchHandler.OnValidPinchEnd += HandlePinchEnd;
+        pinchHandler.OnPinchEnd += HandlePinchEnd;
+        pinchHandler.OnPinchCancelled += HandlePinchCancelled;
     }
 
     private void HandlePinchReadyForSpawn(string value, Vector2 pos1, Vector2 pos2)
@@ -74,7 +75,7 @@ public class HandFollowSpawnHandler : MonoBehaviour
         meshObjectTransform.localScale = currentScale;
     }
 
-    private void HandlePinchEnd(string value)
+    private void HandlePinchEnd(Vector2 pos1, Vector2 pos2, string value)
     {
         if (currentSpawnedObject != null && isSpawning && meshObjectTransform != null)
         {
@@ -85,13 +86,21 @@ public class HandFollowSpawnHandler : MonoBehaviour
         }
     }
 
+    private void HandlePinchCancelled()
+    {
+        isSpawning = false;
+        currentSpawnedObject = null;
+        meshObjectTransform = null;
+    }
+
     private void OnDestroy()
     {
         if (pinchHandler != null)
         {
             pinchHandler.OnPinchReadyForSpawn -= HandlePinchReadyForSpawn;
             pinchHandler.OnPinchUpdate -= HandlePinchUpdate;
-            pinchHandler.OnValidPinchEnd -= HandlePinchEnd;
+            pinchHandler.OnPinchEnd -= HandlePinchEnd;
+            pinchHandler.OnPinchCancelled -= HandlePinchCancelled;
         }
     }
 }

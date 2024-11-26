@@ -17,7 +17,7 @@ public class PinchSpawnHandler : MonoBehaviour
 
     public event System.Action<Vector2, Vector2, string> OnPinchStart;
     public event System.Action<Vector2, Vector2, string> OnPinchUpdate;
-    public event System.Action<string> OnValidPinchEnd;
+    public event System.Action<Vector2, Vector2, string> OnPinchEnd;
     public event System.Action OnPinchCancelled;
     public event System.Action<string, Vector2, Vector2> OnPinchReadyForSpawn;
 
@@ -30,9 +30,9 @@ public class PinchSpawnHandler : MonoBehaviour
 
         if (gestureHandler != null)
         {
-            gestureHandler.onPinchStart.AddListener(HandlePinchStart);
-            gestureHandler.onPinchUpdate.AddListener(HandlePinchUpdate);
-            gestureHandler.onPinchEnd.AddListener(HandlePinchEnd);
+            gestureHandler.onPinchStart.AddListener(new UnityAction<Vector2, Vector2, string>(HandlePinchStart));
+            gestureHandler.onPinchUpdate.AddListener(new UnityAction<Vector2, Vector2, string>(HandlePinchUpdate));
+            gestureHandler.onPinchEnd.AddListener(new UnityAction<Vector2, Vector2, string>(HandlePinchEnd));
         }
         else
         {
@@ -44,24 +44,21 @@ public class PinchSpawnHandler : MonoBehaviour
     {
         if (gestureHandler != null)
         {
-            gestureHandler.onPinchStart.RemoveListener(HandlePinchStart);
-            gestureHandler.onPinchUpdate.RemoveListener(HandlePinchUpdate);
-            gestureHandler.onPinchEnd.RemoveListener(HandlePinchEnd);
+            gestureHandler.onPinchStart.RemoveListener(new UnityAction<Vector2, Vector2, string>(HandlePinchStart));
+            gestureHandler.onPinchUpdate.RemoveListener(new UnityAction<Vector2, Vector2, string>(HandlePinchUpdate));
+            gestureHandler.onPinchEnd.RemoveListener(new UnityAction<Vector2, Vector2, string>(HandlePinchEnd));
         }
     }
 
-    // 改名为 HandlePinchStart
     private void HandlePinchStart(Vector2 pos1, Vector2 pos2, string value)
     {
         initialPinchDistance = Vector2.Distance(pos1, pos2);
         currentGestureValue = value;
         isValidPinch = false;
 
-        // 触发开始事件
         OnPinchStart?.Invoke(pos1, pos2, value);
     }
 
-    // 改名为 HandlePinchUpdate
     private void HandlePinchUpdate(Vector2 pos1, Vector2 pos2, string value)
     {
         float currentDistance = Vector2.Distance(pos1, pos2);
@@ -73,16 +70,14 @@ public class PinchSpawnHandler : MonoBehaviour
             OnPinchReadyForSpawn?.Invoke(currentGestureValue, pos1, pos2);
         }
 
-        // 触发更新事件
         OnPinchUpdate?.Invoke(pos1, pos2, value);
     }
 
-    // 改名为 HandlePinchEnd
-    private void HandlePinchEnd()
+    private void HandlePinchEnd(Vector2 pos1, Vector2 pos2, string value)
     {
         if (isValidPinch)
         {
-            OnValidPinchEnd?.Invoke(currentGestureValue);
+            OnPinchEnd?.Invoke(pos1, pos2, value);
         }
         else
         {
