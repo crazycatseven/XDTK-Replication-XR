@@ -432,6 +432,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rightHandGrabPoint: {fileID: 964943642}
   phoneScreenReference: {fileID: 690392376}
+  spawnSound: {fileID: 8300000, guid: 22e29ae3cf8b3394ba3f5218ab243baf, type: 3}
+  scaleSpeed: 5
 --- !u!114 &15773047
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -455,6 +457,18 @@ MonoBehaviour:
     initialScale: 0.99
   - keyword: ice-cream
     prefab: {fileID: 2539556330589342449, guid: 12dfa5f74f6cbb44291a1a368c0fd709,
+      type: 3}
+    initialScale: 0.99
+  - keyword: m126610lv-0002
+    prefab: {fileID: 6015975851465558488, guid: bcf658c490943144694e7997531b3698,
+      type: 3}
+    initialScale: 0.99
+  - keyword: m126500ln-0001
+    prefab: {fileID: 7023685410349318186, guid: bae4129bca96b994b97837222a275568,
+      type: 3}
+    initialScale: 0.99
+  - keyword: m126506-0001
+    prefab: {fileID: 5527459467310361907, guid: 93b23bde9669d3b4585a5fa01a3515cb,
       type: 3}
     initialScale: 0.99
   defaultPrefab: {fileID: 8876915624124103747, guid: 7a637ee46e19a1947bba2da5440f6cf9,
@@ -18655,7 +18669,7 @@ GameObject:
   - component: {fileID: 1766061804}
   - component: {fileID: 1766061805}
   m_Layer: 0
-  m_Name: HandWristPoint
+  m_Name: HandWristPointLeft
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -22185,7 +22199,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!23 &2033340305
 MeshRenderer:
   m_ObjectHideFlags: 0
