@@ -362,6 +362,7 @@ GameObject:
   - component: {fileID: 15773042}
   - component: {fileID: 15773043}
   - component: {fileID: 15773046}
+  - component: {fileID: 15773048}
   - component: {fileID: 15773045}
   - component: {fileID: 15773047}
   m_Layer: 0
@@ -401,6 +402,8 @@ MonoBehaviour:
   gestureHandler: {fileID: 1569638082}
   minPinchDistance: 200
   scaleThreshold: 0.75
+  spreadDistanceRatio: 1.2
+  minUpwardMovement: 100
 --- !u!114 &15773045
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -471,10 +474,37 @@ MonoBehaviour:
     prefab: {fileID: 5527459467310361907, guid: 93b23bde9669d3b4585a5fa01a3515cb,
       type: 3}
     initialScale: 0.99
+  - keyword: bear
+    prefab: {fileID: 4185263242947563598, guid: f1477c889930d2745b242655042b09ea,
+      type: 3}
+    initialScale: 0.99
+  - keyword: video
+    prefab: {fileID: 2189538343279240354, guid: a6500185c0175564ca41da9e939fceec,
+      type: 3}
+    initialScale: 0.99
   defaultPrefab: {fileID: 8876915624124103747, guid: 7a637ee46e19a1947bba2da5440f6cf9,
     type: 3}
   defaultInitialScale: 0.5
-  spawnHandler: {fileID: 0}
+  handFollowSpawnHandler: {fileID: 0}
+  spreadSpawnHandler: {fileID: 0}
+--- !u!114 &15773048
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 15773041}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1dfa41b05a9b0ab4b869c24c03c2a074, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rightHandGrabPoint: {fileID: 964943642}
+  phoneScreenReference: {fileID: 690392376}
+  targetDistanceFromCamera: 0.9
+  moveSpeed: 2
+  scaleSpeed: 5
+  spawnSound: {fileID: 8300000, guid: 22e29ae3cf8b3394ba3f5218ab243baf, type: 3}
 --- !u!1 &21461819
 GameObject:
   m_ObjectHideFlags: 0

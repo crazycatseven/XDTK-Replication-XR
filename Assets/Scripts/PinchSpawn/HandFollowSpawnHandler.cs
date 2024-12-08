@@ -1,5 +1,6 @@
 using UnityEngine;
 using static PinchSpawnDelegates;
+using System;
 
 [RequireComponent(typeof(PinchSpawnHandler))]
 public class HandFollowSpawnHandler : MonoBehaviour
@@ -74,6 +75,21 @@ public class HandFollowSpawnHandler : MonoBehaviour
         if (spawnSound != null)
         {
             AudioSource.PlayClipAtPoint(spawnSound, rightHandGrabPoint.position);
+        }
+
+        // 如果是视频，设置时间
+        if (value.StartsWith("video", StringComparison.OrdinalIgnoreCase))
+        {
+            currentSpawnedObject.transform.Rotate(0, 180, 0);
+            string timeStr = value.Substring(5); // 移除 "video" 前缀
+            if (float.TryParse(timeStr, out float videoTime))
+            {
+                var videoController = currentSpawnedObject.transform.Find("MeshObject").GetComponent<VideoController>();
+                if (videoController != null)
+                {
+                    videoController.SetVideoTime(videoTime);
+                }
+            }
         }
     }
 

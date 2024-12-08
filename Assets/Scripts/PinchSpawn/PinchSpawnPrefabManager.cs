@@ -22,23 +22,31 @@ public class PinchSpawnPrefabManager : MonoBehaviour
     private float defaultInitialScale = 0.3f;
 
     [SerializeField]
-    private HandFollowSpawnHandler spawnHandler;
+    private HandFollowSpawnHandler handFollowSpawnHandler;
+
+    [SerializeField]
+    private SpreadSpawnHandler spreadSpawnHandler;
 
     private void Start()
     {
-        if (spawnHandler == null)
+        if (handFollowSpawnHandler == null)
         {
-            spawnHandler = GetComponent<HandFollowSpawnHandler>();
+            handFollowSpawnHandler = GetComponent<HandFollowSpawnHandler>();
         }
 
-        if (spawnHandler != null)
+        if (handFollowSpawnHandler != null)
         {
-            spawnHandler.GetSpawnPrefab = GetPrefabByValue;
-            Debug.Log("PinchSpawnPrefabManager: 已设置预制体获取委托");
+            handFollowSpawnHandler.GetSpawnPrefab = GetPrefabByValue;
         }
-        else
+
+        if (spreadSpawnHandler == null)
         {
-            Debug.LogError("PinchSpawnPrefabManager: 找不到 HandFollowSpawnHandler!");
+            spreadSpawnHandler = GetComponent<SpreadSpawnHandler>();
+        }
+
+        if (spreadSpawnHandler != null)
+        {
+            spreadSpawnHandler.GetSpawnPrefab = GetPrefabByValue;
         }
     }
 

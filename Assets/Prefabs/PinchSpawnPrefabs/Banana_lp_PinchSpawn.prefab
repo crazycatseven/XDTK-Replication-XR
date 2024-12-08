@@ -55,7 +55,7 @@ MonoBehaviour:
   _scoringModifier:
     _positionRotationWeight: 0.8
   _slippiness: 0
-  _supportedGrabTypes: 1
+  _supportedGrabTypes: -1
   _pinchGrabRules:
     _thumbRequirement: 2
     _indexRequirement: 2
