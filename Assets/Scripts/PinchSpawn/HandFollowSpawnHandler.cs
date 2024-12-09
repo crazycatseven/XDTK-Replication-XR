@@ -57,12 +57,11 @@ public class HandFollowSpawnHandler : MonoBehaviour
         targetScale = originalScale * scale;
         
         initialPinchDistance = Vector2.Distance(pos1, pos2);
-
         Vector3 directionToCamera = (Camera.main.transform.position - rightHandGrabPoint.position).normalized;
         Quaternion spawnRotation = Quaternion.LookRotation(directionToCamera);
+        spawnRotation = Quaternion.Euler(0, spawnRotation.eulerAngles.y, spawnRotation.eulerAngles.z);
 
         currentSpawnedObject = Instantiate(prefab, rightHandGrabPoint.position, spawnRotation);
-        
         meshObjectTransform = currentSpawnedObject.transform.Find("MeshObject");
         if (meshObjectTransform != null)
         {
