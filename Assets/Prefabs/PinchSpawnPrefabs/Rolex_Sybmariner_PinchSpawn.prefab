@@ -4171,6 +4171,7 @@ GameObject:
   - component: {fileID: 480844495903693285}
   - component: {fileID: 490609207531589197}
   - component: {fileID: 8525448111957181309}
+  - component: {fileID: -6327689363779309598}
   m_Layer: 0
   m_Name: Rolex_Sybmariner_PinchSpawn
   m_TagString: Untagged
@@ -4284,6 +4285,26 @@ MonoBehaviour:
   _attachDistance: 0.1
   _transitionSpeed: 5
   _attachDuration: 0.333
+--- !u!114 &-6327689363779309598
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6015975851465558488}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 27353faac493b0c4ca40c6f8b853f02d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  grabInteractable: {fileID: 0}
+  recycleSound: {fileID: 8300000, guid: 628b3da2f206b914290d33662cc9c810, type: 3}
+  recycleDistance: 0.16
+  recycleDuration: 0.5
+  xzScaleMultiplier: 2
+  yScaleMultiplier: 0.8
+  yMoveOffset: 0.05
+  destroyDelay: 0.5
 --- !u!1 &6036131889204259376
 GameObject:
   m_ObjectHideFlags: 0

@@ -436,7 +436,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rightHandGrabPoint: {fileID: 964943642}
   phoneScreenReference: {fileID: 690392376}
-  spawnSound: {fileID: 8300000, guid: 22e29ae3cf8b3394ba3f5218ab243baf, type: 3}
+  spawnSound: {fileID: 8300000, guid: 73fe0e107a754c9458a972afa7cfdf79, type: 3}
   scaleSpeed: 5
 --- !u!114 &15773047
 MonoBehaviour:
@@ -502,10 +502,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rightHandGrabPoint: {fileID: 964943642}
   phoneScreenReference: {fileID: 690392376}
-  targetDistanceFromCamera: 0.9
+  targetDistanceFromCamera: 0.5
   moveSpeed: 2
   scaleSpeed: 5
-  spawnSound: {fileID: 8300000, guid: 22e29ae3cf8b3394ba3f5218ab243baf, type: 3}
+  spawnSound: {fileID: 8300000, guid: 9c4176f40bc3c2e4fa9fd06e0505fb40, type: 3}
 --- !u!1 &21461819
 GameObject:
   m_ObjectHideFlags: 0

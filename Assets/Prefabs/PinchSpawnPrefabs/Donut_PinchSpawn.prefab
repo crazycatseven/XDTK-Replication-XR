@@ -120,8 +120,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   grabInteractable: {fileID: 0}
-  recycleSound: {fileID: 8300000, guid: 2da69022edb333b409f0aaa85efa6b74, type: 3}
-  recycleDistance: 0.1
+  recycleSound: {fileID: 8300000, guid: 628b3da2f206b914290d33662cc9c810, type: 3}
+  recycleDistance: 0.16
   recycleDuration: 0.5
   xzScaleMultiplier: 2
   yScaleMultiplier: 0.8

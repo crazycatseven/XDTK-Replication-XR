@@ -85,6 +85,7 @@ GameObject:
   - component: {fileID: 85014053461874663}
   - component: {fileID: 1283430478118742281}
   - component: {fileID: 898936976907878098}
+  - component: {fileID: 1040314527579865052}
   m_Layer: 0
   m_Name: VideoPlane_PinchSpawn
   m_TagString: Untagged
@@ -179,6 +180,26 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1.47, y: 0.85, z: 0.07}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &1040314527579865052
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2189538343279240354}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 27353faac493b0c4ca40c6f8b853f02d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  grabInteractable: {fileID: 0}
+  recycleSound: {fileID: 8300000, guid: 628b3da2f206b914290d33662cc9c810, type: 3}
+  recycleDistance: 0.16
+  recycleDuration: 0.5
+  xzScaleMultiplier: 2
+  yScaleMultiplier: 0.8
+  yMoveOffset: 0.05
+  destroyDelay: 0.5
 --- !u!1 &4734885696393308142
 GameObject:
   m_ObjectHideFlags: 0
